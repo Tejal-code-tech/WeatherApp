@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rainfall Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 10px;
+            background-color: #f7f9fc;
+        }
+        #weather {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        input {
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px;
+            border-radius: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Rainfall Prediction</h1>
+    <input type="text" id="city" placeholder="Enter city name" />
+    <button id="getWeather">Check Rainfall</button>
+
+    <div id="weather"></div>
+
+    <script>
+        document.getElementById('getWeather').addEventListener('click', function() {
+            const city = document.getElementById('city').value;
+            const apiKey = 'YOUR_API_KEY'; 
+            const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('City not found');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const weatherDescription = data.weather[0].description;
+                    const rain = data.rain ? data.rain['1h'] : 0; 
+
+                   
+                    const duration = "2-3 hours";
+                    const timing = "Expected from 3 PM to 5 PM";
+                    const rainfallType = rain > 0 ? "Moderate Rain" : "No rain expected";
+                    
+                    let rainMessage = rain > 0 ? 
+                        `Expected amount: ${rain} mm in the last hour.` : 
+                        "No significant rainfall expected.";
+
+                    document.getElementById('weather').innerHTML = 
+                        `<h2>Weather in ${city}:</h2>
+                        <p><strong>Description:</strong> ${weatherDescription}</p>
+                        <p><strong>Rainfall Prediction:</strong> ${rainMessage}</p>
+                        <p><strong>Type of Rainfall:</strong> ${rainfallType}</p>
+                        <p><strong>Expected Duration:</strong> ${duration}</p>
+                        <p><strong>Expected Timing:</strong> ${timing}</p>`;
+                })
+                .catch(error => {
+                    document.getElementById('weather').innerHTML = 
+                        `<p style="color: red;">${error.message}</p>`;
+                });
+        });
+    </script>
+
+</body>
+</html>
